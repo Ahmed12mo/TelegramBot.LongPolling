@@ -13,7 +13,7 @@ TELEGRAM_BOT_TOKEN: str = os.getenv('TELEGRAM_BOT_TOKEN')
 # Initialize bot
 bot = TeleBot(token=TELEGRAM_BOT_TOKEN)
 
-قاعدة بيانات محلية
+#قاعدة بيانات محلية
 
 DATA_FILE = "data.json" if not os.path.exists(DATA_FILE): with open(DATA_FILE, "w") as f: json.dump({}, f)
 
