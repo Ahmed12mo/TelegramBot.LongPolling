@@ -87,23 +87,9 @@ await update.message.reply_text("❌ لم يتم العثور على الوثي�
 
 التوجيه الرئيسي
 
-async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE): text = update.message.text.strip() if text.startswith("اضافة"): await add_document(update, context) elif text.startswith("بحث"): await search(update, context) elif text.startswith("وثائق"): await show_document(update, context) elif text.startswith("كل الوثائق"): await list_documents(update, context) elif text.startswith("حذف"): await delete_document(update, context) else: await update.message.reply_text("🤖 أهلاً بك، استخدم الأوامر:
-
-اضافة [اسم] مع صورة
-
-بحث [كلمة]
-
-وثائق [اسم]
-
-كل الوثائق
-
-حذف [اسم]")
-
-
-# التوجيه الرئيسي
 async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
-    
+
     if text.startswith("اضافة"):
         await add_document(update, context)
     elif text.startswith("بحث"):
@@ -122,7 +108,18 @@ async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "📄 وثائق [الاسم]\n"
             "📂 كل الوثائق\n"
             "🗑️ حذف [الاسم]"
-        )
+)
+اضافة [اسم] مع صورة
+
+بحث [كلمة]
+
+وثائق [اسم]
+
+كل الوثائق
+
+حذف [اسم]")
+
+
 
 # بدء التشغيل
 async def start_bot():
