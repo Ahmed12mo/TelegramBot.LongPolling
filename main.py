@@ -3,6 +3,8 @@ from telebot import TeleBot
 from dotenv import load_dotenv
 from telebot.types import Message
 from telegram import Update, InputFile
+from telegram import Update, InputFile
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 # Load environment variables
 load_dotenv()
 TELEGRAM_BOT_TOKEN: str = os.getenv('TELEGRAM_BOT_TOKEN')
