@@ -2,7 +2,7 @@ import os
 from telebot import TeleBot
 from dotenv import load_dotenv
 from telebot.types import Message
-
+from telegram import Update, InputFile
 # Load environment variables
 load_dotenv()
 TELEGRAM_BOT_TOKEN: str = os.getenv('TELEGRAM_BOT_TOKEN')
