@@ -15,7 +15,7 @@ bot = TeleBot(token=TELEGRAM_BOT_TOKEN)
 def send_welcome(message: Message):
     """ Handles the /start command by sending a "Hello world!" message in response. """
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Hello! 🍡 Send me a message and I'll echo it back to you")
+    bot.send_message(chat_id, "Hello! Send me a message and I'll echo it back to you")
 
 
 @bot.message_handler(func=lambda message: True)
