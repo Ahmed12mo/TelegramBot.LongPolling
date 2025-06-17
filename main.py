@@ -100,29 +100,37 @@ async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE): t
 حذف [اسم]")
 
 
-بدء التشغيل
+# التوجيه الرئيسي
+async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.strip()
+    
+    if text.startswith("اضافة"):
+        await add_document(update, context)
+    elif text.startswith("بحث"):
+        await search(update, context)
+    elif text.startswith("وثائق"):
+        await show_document(update, context)
+    elif text.startswith("كل الوثائق"):
+        await list_documents(update, context)
+    elif text.startswith("حذف"):
+        await delete_document(update, context)
+    else:
+        await update.message.reply_text(
+            "🤖 أهلاً بك، استخدم الأوامر:\n"
+            "🌟 اضافة [اسم] + صورة\n"
+            "🔍 بحث [كلمة]\n"
+            "📄 وثائق [الاسم]\n"
+            "📂 كل الوثائق\n"
+            "🗑️ حذف [الاسم]"
+        )
 
-async def start_bot(): app = ApplicationBuilder().token("7953128215:AAF0CzKGqXWmFsG_TMB6NnJlAmY1J1c5hV4").build() app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_commands)) print("✅ البوت يعمل الآن...") await app.run_polling()
+# بدء التشغيل
+async def start_bot():
+    app = ApplicationBuilder().token("7953128215:AAF0CzKGqXWmFsG_TMB6NnJlAmY1J1c5hV4").build()
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_commands))
+    print("✅ البوت يعمل الآن...")
+    await app.run_polling()
 
-if name == 'main': import asyncio asyncio.run(start_bot())
-
-
-    save_data(data)
-
-    await update.message.reply_text(f"📥 تم إضافة الوثيقة يدويًا: {name}")
-
-# تشغيل البوت
-if __name__ == "__main__":
-    TOKEN = os.getenv("BOT_TOKEN") or "7953128215:AAF0CzKGqXWmFsG_TMB6NnJlAmY1J1c5hV4"
-    app = ApplicationBuilder().token(TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("بحث", search))
-    app.add_handler(CommandHandler("وثائق", show_document))
-    app.add_handler(CommandHandler("كل_الوثائق", list_documents))
-    app.add_handler(CommandHandler("حذف", delete_document))
-    app.add_handler(CommandHandler("اضف", add_document))
-    app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
-
-    print("🤖 البوت يعمل الآن...")
-    app.run_polling()
+if __name__ == '__main__':
+    import asyncio
+    asyncio.run(start_bot())
