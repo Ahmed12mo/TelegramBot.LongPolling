@@ -21,7 +21,7 @@ def load_data(): with open(DATA_FILE, "r") as f: return json.load(f)
 
 def save_data(data): with open(DATA_FILE, "w") as f: json.dump(data, f)
 
-إضافة وثيقة
+#إضافة وثيقة
 
 async def add_document(update: Update, context: ContextTypes.DEFAULT_TYPE): if not update.message.photo: await update.message.reply_text("📎 أرسل صورة مع الأمر من فضلك.") return
 
@@ -41,7 +41,7 @@ save_data(data)
 
 await update.message.reply_text(f"✅ تم حفظ الوثيقة باسم: {name}")
 
-البحث عن وثيقة
+#البحث عن وثيقة
 
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE): keyword = update.message.text.replace("بحث", "").strip() data = load_data()
 
@@ -52,7 +52,7 @@ else:
     reply = "❌ لم يتم العثور على نتائج."
 await update.message.reply_text(reply)
 
-عرض وثيقة
+#عرض وثيقة
 
 async def show_document(update: Update, context: ContextTypes.DEFAULT_TYPE): name = update.message.text.replace("وثائق", "").strip() data = load_data()
 
@@ -65,11 +65,11 @@ for key in data:
 
 await update.message.reply_text("❌ لم يتم العثور على الوثيقة.")
 
-عرض كل الوثائق
+#عرض كل الوثائق
 
 async def list_documents(update: Update, context: ContextTypes.DEFAULT_TYPE): data = load_data() if not data: await update.message.reply_text("📂 لا توجد وثائق محفوظة.") else: msg = "🗂️ الوثائق المحفوظة:\n" + "\n".join(f"✅ {name}" for name in data.keys()) await update.message.reply_text(msg)
 
-حذف وثيقة
+#حذف وثيقة
 
 async def delete_document(update: Update, context: ContextTypes.DEFAULT_TYPE): name = update.message.text.replace("حذف", "").strip() data = load_data()
 
@@ -85,7 +85,7 @@ for key in list(data):
 
 await update.message.reply_text("❌ لم يتم العثور على الوثيقة.")
 
-التوجيه الرئيسي
+#التوجيه الرئيسي
 
 async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
