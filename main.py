@@ -14,10 +14,12 @@ TELEGRAM_BOT_TOKEN: str = os.getenv('TELEGRAM_BOT_TOKEN')
 bot = TeleBot(token=TELEGRAM_BOT_TOKEN)
 
 
-# إنشاء مجلد للصور إن لم يكن موجودًا
-os.makedirs("downloads", exist_ok=True)
+# تحميل المتغيرات البيئية
 
 DATA_FILE = "data.json"
+os.makedirs("downloads", exist_ok=True)
+
+# إنشاء ملف البيانات إذا لم يكن موجودًا
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, "w") as f:
         json.dump({}, f)
@@ -30,22 +32,15 @@ def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f)
 
-# معرف الأدمن
-ADMIN_ID = 5570934498
-
-# 🟢 إضافة وثيقة (يدعم صور متعددة)
+# إضافة وثيقة (صور متعددة لنفس الاسم)
 async def add_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.from_user.id != ADMIN_ID:
-        await update.message.reply_text("🚫 الأمر مخصص للأدمن فقط.")
-        return
-
     if not update.message.photo:
         await update.message.reply_text("📎 أرسل صورة مع الأمر من فضلك.")
         return
 
     name = update.message.text.replace("اضافة", "").strip()
     if not name:
-        await update.message.reply_text("📝 من فضلك اكتب اسم الوثيقة بعد كلمة 'اضافة'")
+        await update.message.reply_text("📝 اكتب اسم الوثيقة بعد كلمة 'اضافة'")
         return
 
     file = await update.message.photo[-1].get_file()
@@ -62,25 +57,95 @@ async def add_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(f"✅ تم حفظ الوثيقة باسم: {name}")
 
-# 🔍 البحث عن أسماء تحتوي كلمة
+# البحث
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyword = update.message.text.replace("بحث", "").strip()
     data = load_data()
     results = [name for name in data if keyword in name]
     if results:
-        reply = "🔎 تم العثور على الأسماء التالية:\n" + "\n".join(f"✅ {name}" for name in results)
+        reply = "🔎 تم العثور على:\n" + "\n".join(f"✅ {name}" for name in results)
     else:
         reply = "❌ لم يتم العثور على نتائج."
     await update.message.reply_text(reply)
 
-# 📄 عرض الوثائق الخاصة باسم معين
+# عرض وثائق
 async def show_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = update.message.text.replace("وثائق", "").strip()
     data = load_data()
-
     found = False
     for key in data:
         if name in key:
+            for path in data[key]:
+                if os.path.exists(path):
+                    with open(path, "rb") as f:
+                        await update.message.reply_photo(photo=InputFile(f), caption=f"🌸 {key}")
+                    found = True
+    if not found:
+        await update.message.reply_text("❌ لم يتم العثور على الوثيقة.")
+
+# كل الوثائق
+async def list_documents(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    data = load_data()
+    if not data:
+        await update.message.reply_text("📂 لا توجد وثائق محفوظة.")
+    else:
+        msg = "🗂️ الوثائق المحفوظة:\n" + "\n".join(f"✅ {name}" for name in data.keys())
+        await update.message.reply_text(msg)
+
+# حذف
+async def delete_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    name = update.message.text.replace("حذف", "").strip()
+    data = load_data()
+
+    for key in list(data):
+        if name in key:
+            for path in data[key]:
+                if os.path.exists(path):
+                    os.remove(path)
+            del data[key]
+            save_data(data)
+            await update.message.reply_text(f"🗑️ تم حذف الوثيقة: {key}")
+            return
+
+    await update.message.reply_text("❌ لم يتم العثور على الوثيقة.")
+
+# التوجيه الرئيسي
+async def handle_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.strip()
+    if text.startswith("اضافة"):
+        await add_document(update, context)
+    elif text.startswith("بحث"):
+        await search(update, context)
+    elif text.startswith("وثائق"):
+        await show_document(update, context)
+    elif text.startswith("كل الوثائق"):
+        await list_documents(update, context)
+    elif text.startswith("حذف"):
+        await delete_document(update, context)
+    else:
+        await update.message.reply_text(
+            "🤖 أهلاً بك، استخدم الأوامر:\n"
+            "🌟 اضافة [اسم] + صورة\n"
+            "🔍 بحث [كلمة]\n"
+            "📄 وثائق [الاسم]\n"
+            "📂 كل الوثائق\n"
+            "🗑️ حذف [الاسم]"
+        )
+
+# بدء البوت
+async def start_bot():
+    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_commands))
+    print("✅ البوت يعمل الآن...")
+    await app.run_polling()
+
+# تصليح مشكلة event loop (خاصة بـ Replit)
+if __name__ == '__main__':
+    import asyncio
+    import nest_asyncio
+
+    nest_asyncio.apply()
+    asyncio.get_event_loop().run_until_complete(start_bot())
             for path in data[key]:
                 if os.path.exists(path):
                     with open(path, "rb") as f:
